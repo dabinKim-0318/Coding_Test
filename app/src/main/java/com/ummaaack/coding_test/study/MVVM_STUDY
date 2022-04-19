@@ -1,0 +1,155 @@
+UI Layer 안에
+-UI elements ->(State holders 보는중)
+-State holders:
+ViewModel 이들고 있는 데이터
+ViewModel은 State holders말고 여러 의미를 가지고있는데..
+
+
+->Domain Layer
+->Data Layer
+
+override fun initView(){
+ initUserData()
+}
+
+private fun initUserData(){
+communityViewModel.iniUserData() //처음에 유저 데이터 가져옴
+
+//유저데이터 가져오면 그에따른 액터 실행, 액티비티가 userData를 보고있음
+//이게 UI elements가 State holders를 보는 화살표인거다
+communityViewModel.UserData.observe(this){
+ set..
+ }
+}
+
+//UI elements가 단순히 State를 holding하고 있어야하는데 이건 뷰모델의 데이터를 가지고 뭘 만든다
+//State holders를 보고 수동적으로 갱신해야하는거다 이걸 기반으로 값 만들면 안됨
+//이거 nickname가져오는거는 server의 response모델이 view까지 날라온거임 ㅋㅋ
+//이러면 뷰 작업을 할때 알아야되는게 지금 코드에서
+1. server의 response model
+2. viewmodel의 내부 구현체=getUserData()
+3. getUserData()가 nickname을 가지고 있다는 것
+=>activity하나를 작업할때도 api의 response / viewmodel의 구현(유저ㅔ이터가 뭘 가지고있노) /
+=>이게 싫어서 mapping을 하는거다
+
+//view의 state만 전달받아야하는구나!!!!!!!!!!!!!!!!!!!!!!!!!
+private fun setObserve(){
+ if(it.author==communityPostViewModel.getUserData()?.nickname) //이런 직접 접근을 피하라
+ setPostEditWriterClickListener()
+}
+
+지금은 server의 reponse model이 그대로 날라오는데 이러지 말고
+1. viewmodel에서 서버의 response model을 가공해서 view state만 view한테 전달할거냐
+2. repository에서 view state를 반환할거냐
+
+//이렇게 만들어두고
+data class ViewState(
+ val isSubmitButtonEnabled:Boolean
+)
+
+private fun setObserve(){
+//로그인, 패스워드 확인 받아야되고.. 이런걸 확인하고 싶지 않아서 data class로 따로 만드는군
+//액티비티에서 이렇게 처리해주면 view에서는 viewmodel의 값을 아무것도 모르고도 view state를 holding할 수 있음
+//근데 이런식으로 하려면 Unit 함수(실행 트리거)
+//Observe함수 (ViewModel값 수동적으로 받고 갱신) 하는 함수 2개가 필요하겠지
+
+//MVVM할때 일종의 unit함수로 trigger을 시킴(api콜같은거)
+대신 내부 구현은 몰라야함 = *event trigger되었다
+->근데 어느시점에 갑자기
+->observe data를 받아와서 = *view update
+===즉 view는 이 2개인 event trigger과 view update만 하고 중간과정은 몰라야한다
+binding.button.isEnable=isSubmitButtonnabled
+}
+
+viewmodel에서는 loadData()가 어떻게 호출되는지 몰라야한다 근데 어느순간 호출된다
+loadData->date를 view에 던짐 그냥 던지는게 아니라 data를 가지고 state holder를 갱신하는것
+===즉 loadData->data->update state holder
+fun loadData(){
+  _viewState.value=ViewState(isSubmitButtonEnabled=false)
+  ->이렇게 하면 view의 state가 어떨지 viewmodel은 바로 알 수 있음
+
+  viewModelScope.launch{
+   _postData.value=rep.api()
+   -> View가 어떤 상태인지 모르고 그냥 repository에서 api를 call해올 뿐임
+   ->그래서 view가 어떤 상태인지 알기위해 다시 activity에서 조작할것임
+   ->그래서 여기서 mapping을 해서 viewState를 내보내주는거다
+   _viewState.value=viewState
+   ->이렇게 해주면 viewModel작업할떄 view를 알 필요가 없음 viewmodel코드를 볼때 view의 형태를 보려고
+   view까지 안가도 됨 이렇게 함으로써 viewmodel은 viewmodel만 보면되고(?)
+   view에서는 binding.button.isEnable=isSubmitButtonEnabled이라는 activity만 보면됨
+  }
+  _postData.value=ServerResponse(..)
+  ->서버의 responseData를 그냥 넘기면 ViewModel이 View에 대해서 알수있는 방법이 없음
+   이걸로 view가 어떤 상태일지 알수있는 방법이 없다
+}
+
+
+
+******************************************************************************************************************************
+
+
+class SomeViewModel:ViewModel(){
+
+ //0. StateFlow를 쓰는경우 -> viewModel 에서 LiveData를 observe하는 나자신을 발견하면 써라
+ init{
+   //서버에서 3초마다 값을 갱신하고 싶은경우
+    _viewState
+
+   //stateFlow에 들어오는 기본값을 구독하고 싶은 경우 = viewModel에서 라이브데이터를 구독하고 싶은 경우가 있음
+   //default text field 초기값을 채우고 싶은 경우
+   _viewState
+ }
+
+ //1. state holder -> view의 상태를 결정하고 이것만 봐도 View를 알 수 있음
+   val _viewState:LivData<ViewState> // <- 이 선에서 대부분 처리 가능
+   val _viewState:StateFlow<ViewState> // <- 이게 필요한 케이스가 생김
+
+    //이런식으로 써도됨
+   val _viewState:StateFlow<ViewState>
+   val viewState:LiveData<ViewState>=_viewState.asLiveData()
+
+ //2. event -> 반드시 사용자에게 어떤 일이 일어났음을 알리는 용도(완료눌렀을떄 api 성공, error, dialog )
+   val _viewEvent:SingleLiveEvent<ViewEvent>
+   val _viewEvent:Channel<ViewState>
+   =>state holder는 view의 상태를 결정하기 떄문에 항상 갱신되고 여러번 소비됨
+   =>event는 쓰일때만 소비되고 또 호출되면 안됨 configration을 우리가 관리하는 느낌
+
+ //3. trigger
+ ->viewModelScope는 무언가를 launch시키는 코드가 되거나, 그 자체로 suspend fun이 되어야함
+ fun submit(): Unit{
+   viewModelScope.launch{
+   try{
+    val responseModel=repository.api() //api불러온다음에
+    val viewState=responseModel.toViewState() //api불러온 response데이터에서 ViewState를 갱신?
+
+    _viewState.value=viewState //view의 state를 갱신신
+   }catch( ... ){
+     _viewEvent.value=ViewEvent.Error(it)
+   }
+  }
+ }
+
+  ->이건 거의 안씀
+  suspend fun submit():Unit{
+   ..
+  }
+}
+
+********************************************************************************************************************************************
+class SomeActivity{
+ val binding:Binding
+ val viewModel:SomeViewModel
+
+  onCreate{
+
+  //1. view update
+   viewModel.observe{
+     view.update()
+   }
+
+  //2. event trigger
+  binding.view.setEventListener{
+      viewModel.trigger()
+   }
+  }
+}
