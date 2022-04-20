@@ -75,12 +75,13 @@ fun main7() = with(Scanner(System.`in`)) {
     }
 }
 
-//A+B-4*******************************************
+//A+B-4**********************입력개수가 정해지지 않은 경우*********************
 fun main8() {
     val input = Scanner(System.`in`)
     while (true) {
         val rr = input.nextLine() ?: break
         val aa = rr.split(" ").map { it.toInt() }
+        //break 여기서 해도 ㄱㅊ?
         print("${aa[0] + aa[1]}")
     }
 }

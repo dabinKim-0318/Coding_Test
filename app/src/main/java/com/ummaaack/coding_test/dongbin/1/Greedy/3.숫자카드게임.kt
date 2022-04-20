@@ -32,6 +32,7 @@ fun main_3() = with(Scanner(System.`in`)) {
     println(list23[0])
 }
 
+//한줄씩 비교하면 된다는걸 생각을 못하고 무작적 행렬로 풀려고 했다
 fun main() = with(Scanner(System.`in`)) {
     val n = nextInt() //행
     val m = nextInt() //열
