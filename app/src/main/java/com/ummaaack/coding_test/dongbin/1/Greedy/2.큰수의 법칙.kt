@@ -42,6 +42,7 @@ fun main() = with(Scanner(System.`in`)) {
     var count = 0
 
     val arr = mutableListOf<Int>()
+    val arr2= MutableList(nextInt()){nextInt()}
     for (item in 0 until n) {
         arr.add(nextInt())
     }

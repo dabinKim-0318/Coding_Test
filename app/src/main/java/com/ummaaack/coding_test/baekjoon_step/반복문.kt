@@ -76,23 +76,24 @@ fun main7() = with(Scanner(System.`in`)) {
 }
 
 //A+B-4**********************입력개수가 정해지지 않은 경우*********************
-fun main8() {
+fun main44() {
     val input = Scanner(System.`in`)
     while (true) {
         val rr = input.nextLine() ?: break
         val aa = rr.split(" ").map { it.toInt() }
+        print(aa) //[5,3]
         //break 여기서 해도 ㄱㅊ?
         print("${aa[0] + aa[1]}")
     }
 }
 
-fun main9() = with(Scanner(System.`in`)) {
+fun mainf() = with(Scanner(System.`in`)) {
     while (hasNextInt()) {
         println(nextInt() + nextInt())
     }
 }
 
-fun main() = with(Scanner(System.`in`)) {
+fun main10() = with(Scanner(System.`in`)) {
     var result = 0
     val input = nextLine()
     val init = input.toInt()
@@ -101,7 +102,7 @@ fun main() = with(Scanner(System.`in`)) {
     var new = ""
     while (true) {
         if (init == new.toInt()) break
-   println(result)
+        println(result)
         if (result == 0) {
             f = input[0].toString().toInt()
             s = input[1].toString().toInt()
@@ -113,9 +114,9 @@ fun main() = with(Scanner(System.`in`)) {
         }
 
         if (f + s < 10) {
-            if(s!=0) new = (s.toString() + (f + s).toString())
-            else new=f.toString()
-        } else if(f+s>=10){
+            if (s != 0) new = (s.toString() + (f + s).toString())
+            else new = f.toString()
+        } else if (f + s >= 10) {
             val two = (f + s).toString()
             println(f)
             println(s)
@@ -125,10 +126,13 @@ fun main() = with(Scanner(System.`in`)) {
         }
         result += 1
     }
-println(result)
+    println(result)
 }
 
-
+fun main() = with(Scanner(System.`in`)) {
+    val plan = nextLine().split(" ")
+    println(plan)
+}
 
 
 

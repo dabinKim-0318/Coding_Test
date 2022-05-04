@@ -7,13 +7,8 @@ fun main() = with(Scanner(System.`in`)) {
     //n입력
     val n = nextInt()
     //이동 계획
-    val input = Scanner(System.`in`)
-    var plan = listOf<String>()
-    while (true) {
-        val str = input.nextLine()
-        plan = str.split(" ")  //split은 배열을 반환함
-        break
-    }
+    val str = Scanner(System.`in`).nextLine()
+    var plan =str.split(" ")  //split은 배열을 반환함
 
     //결과 행렬 저장
     var (x, y) = Pair(1, 1)
