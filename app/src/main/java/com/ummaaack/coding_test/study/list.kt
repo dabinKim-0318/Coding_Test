@@ -17,6 +17,7 @@ fun main() {
     //특정값으로 초기화한 리스트
     val zeroList = List(5) { 0 } //[0, 0, 0, 0, 0]
     val zeroList2 = List(5) { _ -> 0 } //[0, 0, 0, 0, 0]
+    val bol=List(5){false}
     print(zeroList)
 
     val list2 = MutableList(5) { 5 }  //[5,5,5,5,5]
