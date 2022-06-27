@@ -185,4 +185,6 @@ fun main(args: Array<String>) {
     val list = mutableListOf('a', 'b', 'c', 'd')
     val list2 = permutation(list)
     list2.forEach { print("$it ") }
-    println()}
+    println()
+}
+
