@@ -35,6 +35,7 @@ fun main() {
     list.count() //size랑 똑같누
     people.find { it.name == "다빈" }  //T타입
     people.findLast { it.name == "다빈" }
+    people.takeLast(3)
 
     //조건만족하는 첫, 마지막 객체 내놔: first(), firstOrNull(), last(), lastOrNull() -> T타입
     list.first { it == 4 } //T타입 조건에 맞는 첫번째 데이터
