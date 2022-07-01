@@ -3,7 +3,6 @@ package com.ummaaack.coding_test.baekjoon_step.`1`.Greedy
 import java.util.*
 
 fun main() = with(Scanner(System.`in`)) {
-    //세 정수 A, B, C가 주어진다. 이때, 두 번째로 큰 정수를 출력하는 프로그램
     var num = nextInt()
     //6,9를 필터링한 리스트
     var uniqueList = num.toString().toCharArray().filter { it != '6' && it != '9' }.toMutableList()
