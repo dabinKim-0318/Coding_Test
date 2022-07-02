@@ -1,31 +1,40 @@
 package com.ummaaack.coding_test.baekjoon_step.`1`.Greedy
 
+
+import androidx.core.text.isDigitsOnly
 import java.util.*
 
 fun main() = with(Scanner(System.`in`)) {
-    var num = nextInt()
-    //6,9를 필터링한 리스트
-    var uniqueList = num.toString().toCharArray().filter { it != '6' && it != '9' }.toMutableList()
-    //uniqueList를 distinct한 리스트
-    var distinctList = uniqueList.distinct()
-    //중복 수 카운트 리스트
-    var countList = mutableListOf<Int>()
-    distinctList.forEach { i ->
-        countList.add(uniqueList.count { it == i })
+
+    var comList = listOf<String>()
+    val stack = Stack<Int>()
+    //명령의 수
+    val comCount = nextInt()
+
+    //명령 수만큼 반복
+    for (index in 1..comCount) {
+        val command = nextLine().split(" ")
+        comList = command
     }
-    //카운트 리스트 중 가장 큰 수
-
-    var max = countList.maxOrNull() ?: 0
-
-    var sixNineNum = num.toString().toCharArray().count { it == '6' || it == '9' }
-    if(sixNineNum%2==0) sixNineNum/=2
-    else sixNineNum=sixNineNum/2 +1
-
-    if (max > sixNineNum) {
-        println(max)
-    } else if(sixNineNum==0){
-        println(1)
-    }else{
-        println(sixNineNum)
+    //명령 수만큼 반복
+    for (index in comList.indices) {
+        if (comList[index] == "top") { //push
+            if (stack.isNotEmpty()) println(stack.peek())
+            else println(-1)
+        } else if (comList[index] == "pop") {
+            if (stack.isNotEmpty()) println(stack.pop())
+            else println(-1)
+        } else if (comList[index] == "size") {
+            println(stack.size)
+        } else if (comList[index] == "empty") {
+            if (stack.isNotEmpty()) println(0)
+            else println(1)
+        } else if (comList[index] == "push") {
+            stack.add(comList[index + 1].toInt())
+        }
     }
+
+    //명령에 따라 스택 처리하면서 출력해야하면 하나씩 출력
+
+
 }
