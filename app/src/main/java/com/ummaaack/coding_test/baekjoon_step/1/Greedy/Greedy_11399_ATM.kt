@@ -1,40 +1,18 @@
 package com.ummaaack.coding_test.baekjoon_step.`1`.Greedy
-
-
-import androidx.core.text.isDigitsOnly
 import java.util.*
 
 fun main() = with(Scanner(System.`in`)) {
-
-    var comList = listOf<String>()
-    val stack = Stack<Int>()
-    //명령의 수
-    val comCount = nextInt()
-
-    //명령 수만큼 반복
-    for (index in 1..comCount) {
-        val command = nextLine().split(" ")
-        comList = command
+    //2명의 여학생과 1명의 남학생
+//여학생의 수 N, 남학생의 수 M, 인턴쉽에 참여해야하는 인원 K가 주어질 때 만들 수 있는 최대의 팀
+    var N=nextInt()
+    var M=nextInt()
+    val K=nextInt()
+    var answer=0
+    while(N>1&& M>0 && N+M>=3+K){
+        N-=2
+        M-=1
+        answer++
     }
-    //명령 수만큼 반복
-    for (index in comList.indices) {
-        if (comList[index] == "top") { //push
-            if (stack.isNotEmpty()) println(stack.peek())
-            else println(-1)
-        } else if (comList[index] == "pop") {
-            if (stack.isNotEmpty()) println(stack.pop())
-            else println(-1)
-        } else if (comList[index] == "size") {
-            println(stack.size)
-        } else if (comList[index] == "empty") {
-            if (stack.isNotEmpty()) println(0)
-            else println(1)
-        } else if (comList[index] == "push") {
-            stack.add(comList[index + 1].toInt())
-        }
-    }
-
-    //명령에 따라 스택 처리하면서 출력해야하면 하나씩 출력
-
-
+    println(answer)
 }
+
