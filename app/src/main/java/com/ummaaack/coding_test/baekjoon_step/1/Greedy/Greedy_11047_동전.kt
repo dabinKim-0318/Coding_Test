@@ -2,21 +2,37 @@ package com.ummaaack.coding_test.baekjoon_step.`1`.Greedy
 
 import java.util.*
 
-fun main() = with(Scanner(System.`in`)) {
-    var str = nextLine()
-    //문자열 배열->전부 대문자로 만들기
-    val newStr = str.toUpperCase().toCharArray().map { it.toString() }.toMutableList()
-    //distinct배열->전무 대문자
-    val distinctList = newStr.distinct()
-    val countList = mutableListOf<Int>()
-    //카운트 배열->max인 element의 index로 distinct배열에서 element찾기 대문자로 출력
-    distinctList.forEach { i ->
-        countList.add(newStr.count { i == it })
-    }
-    val max = countList.maxOrNull()!!
+import java.util.*
+import kotlin.collections.ArrayDeque
 
-    if (countList.count { it == max } > 1) println("?")
-    else {
-        println(distinctList[countList.indexOf(max)])
+
+private var N = 0
+fun main() = with(Scanner(System.`in`)) {
+    //사전순으로 바로 이전에 오는 순열을 구하는 프로그램
+
+    N = nextInt()
+    val list = mutableListOf<Int>()
+    for (item in 0 until N) {
+        list.add(nextInt())
+    }
+
+    val listInt = list.map { it.toString() }.joinToString("").toInt()
+    val isVisited = BooleanArray(N + 1)
+    dfs(0, isVisited, IntArray(N), listInt)
+}
+
+private fun dfs(depth: Int, isVisited: BooleanArray, nums: IntArray, listInt:Int) {
+  /*  if (depth == N) {
+        for(index in 0 until nums.size){
+            if(nums[index]==listInt&&)
+        }
+    }*/
+    for (i in 1..N) {
+        if (!isVisited[i]) {
+            isVisited[i] = true
+            nums[depth] = i
+            dfs(depth + 1, isVisited, nums,listInt)
+            isVisited[i] = false
+        }
     }
 }
