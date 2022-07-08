@@ -3,51 +3,54 @@ package com.ummaaack.coding_test.baekjoon_step
 import java.util.*
 import kotlin.math.max
 
-val graph:Array<IntArray> = Array(250){IntArray(250){0}}
-var n=0
-var m=0
-var answer=0
+//캠퍼스에서 도연이가 만날 수 있는 사람의 수
+//상하좌우
 
-fun main(){
-    val nm=readLine()!!.split(" ").map{it.toInt()}
-    n=nm[0]
-    m=nm[1]
+var graph: Array<IntArray> = Array(200) { IntArray(200) { 0 } }
+var n = 0
+var m = 0
 
-    for(i in 0 until n){
-        val list=readLine()!!.split(" ").map{it.toInt()}
-        for(j in 0 until m){
-            graph[i][j]=list[j]
+//이동할 4방향 정의
+val dx = listOf(-1, 1, 0, 0)
+val dy = listOf(0, 0, -1, 1)
+fun main() {
+    val nm = readLine()!!.split(" ").map { it.toInt() }
+    n = nm[0]
+    m = nm[1]
+
+    for (i in 0 until n) {
+        val list = readLine()!!.map { it.toString().toInt() }
+        for (j in 0 until m) {
+            graph[i][j] = list[j]
         }
     }
 
-    for(i in 0 until n){
-        for(j in 0 until m){
-            if(dfs(i,j)) answer++
-        }
-    }
-
-    println(answer)
+    println(bfs(0, 0))
 }
 
-fun dfs(x:Int,y:Int):Boolean{
-    if(x<0||x>=n||y<0||y>=m) return false
+fun bfs(x: Int, y: Int): Int {
+    val queue: Queue<Pair<Int, Int>> = LinkedList()
 
-    if(graph[x][y]==1){
-        graph[x][y]=0
+    queue.add(Pair(x, y))
+    while (queue.isNotEmpty()) {
+        val node = queue.poll()
+        val xx = node.first
+        val yy = node.second
 
-        dfs(x+1,y)
-        dfs(x-1,y)
-        dfs(x,y+1)
-        dfs(x,y-1)
+        for(i in 0 until 4){
 
-        dfs(x-1,y+1)
-        dfs(x+1,y+1)
-        dfs(x-1,y-1)
-        dfs(x+1,y-1)
+            val nextX=xx+dx[i]
+            val nextY=yy+dy[i]
 
-        return true
+            if(nextX<0||nextX>=n||nextY<0||nextY>=m) continue
+            if(graph[nextX][nextY]==0) continue
+
+            if(graph[nextX][nextY]==1){
+                graph[nextX][nextY]= graph[xx][yy] +1
+                queue.add(Pair(nextX,nextY))
+            }
+        }
     }
 
-    return false
-
+    return graph[n-1][m-1]
 }
