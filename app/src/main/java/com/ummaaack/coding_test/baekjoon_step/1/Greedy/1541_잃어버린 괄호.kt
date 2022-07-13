@@ -3,40 +3,57 @@ package com.ummaaack.coding_test.baekjoon_step
 import java.util.*
 import kotlin.math.max
 
+val graph: Array<IntArray> = Array(1000) { IntArray(1000) { 0 } }
+var isVisited: Array<BooleanArray> = Array(1000) { BooleanArray(1000) { false } }
+var virus: Queue<Pair<Int, Int>> = LinkedList()
+var n = 0
+var m = 0
+val dy = arrayOf(-1, 0, 1, 0)
+val dx = arrayOf(0, 1, 0, -1)
+var max = 0
+var answer = Integer.MIN_VALUE
+
 fun main() {
+    val nm = readLine()!!.split(" ").map { it.toInt() }
+    n = nm[0]
+    m = nm[1]
+    max = n * m
 
-    val n = readLine()!!.toInt()
-    val list = IntArray(n + 1) { 0 }
-    var d = MutableList(10000) { 0 }
     for (i in 0 until n) {
-        list[i] = Scanner(System.`in`).nextInt()
-    }
-
-    for (i in 1..n) { //1 2 3 4 5
-        //경우의 수중 가장 큰값
-        for (j in 1..i) { //1
-            d[i] = max(d[i], d[i - j] + list[j])
+        val list = readLine()!!.split(" ").map { it.toInt() }
+        for (j in 0 until m) {
+            graph[i][j] = list[j]
+            if (graph[i][j] == 0) continue
+            max--
+            if (graph[i][j] == 2)
+                virus.offer(Pair(i, j))
         }
     }
-    println(d[n])
+    permutation(0)
 }
-//10 9 8 7 6
 
+val copyList = graph.copyOf()
+val isVisitedPer = Array(n){BooleanArray(m){false} }
+fun permutation(dept: Int) {
 
-object Beak11052 {
-    @JvmStatic
-    fun main(args: Array<String>) {
-        val sc = Scanner(System.`in`)
-        val n = sc.nextInt()
-        val arr = IntArray(n + 1)
-        val d = IntArray(n + 1)
-        for (i in 1..n) arr[i] = sc.nextInt()
-        for (i in 1..n) {
-            for (j in 1..i) {
-                d[i] = Math.max(d[i], d[i - j] + arr[j])
+    if (dept == 3) {
+        var countVirusRange=0
+        val q:Queue<Pair> = LinkedList
+
+    }
+
+    for (x in 0 until n) {
+        for (y in 0 until m) {
+            if (isVisitedPer[x][y]==false&&copyList[x][y] == 0) {
+                graph[x][y] = 1
+                isVisitedPer[x][y]=true
+                max--
+                permutation(dept + 1)
+
+                isVisited[x][y]=false
+                graph[x][y]=0
+                max++
             }
         }
-        println(d[n])
-        sc.close()
     }
 }
