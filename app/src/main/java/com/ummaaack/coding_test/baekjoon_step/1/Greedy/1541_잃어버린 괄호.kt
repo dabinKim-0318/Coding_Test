@@ -3,30 +3,24 @@ package com.ummaaack.coding_test.baekjoon_step
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.*
 
 fun main() = with(BufferedReader(InputStreamReader(System.`in`))) {
-    val input = readLine()
-    val stack = Stack<Char>()
-    var flag = true //true면 뒤집음
-    val sb = StringBuilder("")
-    for (i in input.indices) {
-        val char = input[i]
-        if (char == '<') flag = false
-        if (char == '>') {
-            flag = true
-            sb.append(char)
+    val (m, n) = readLine().split(" ").map { it.toInt() }
+    val list = IntArray(n - m + 1) { it + m }
+    for (it in list) {
+        if (it == 2) {
+            println(it)
             continue
         }
-
-        if (flag) {
-            if (char != ' ') stack.push(char)
-        }
-        if (!flag || char == ' ') {
-          while(stack.isNotEmpty()) sb.append(stack.pop())
-            sb.append(char)
+        if (it != 1) {
+            var so=true
+            for (i in (2..it - 1)) {
+                if (it % i == 0) {
+                    so=false
+                    break
+                }
+            }
+           if(so) println(it)
         }
     }
-    while(stack.isNotEmpty()) sb.append(stack.pop())
-    println(sb.toString())
 }
