@@ -3,24 +3,24 @@ package com.ummaaack.coding_test.baekjoon_step
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import kotlin.math.abs
 
+var ans = 1L
 fun main() = with(BufferedReader(InputStreamReader(System.`in`))) {
-    val (m, n) = readLine().split(" ").map { it.toInt() }
-    val list = IntArray(n - m + 1) { it + m }
-    for (it in list) {
-        if (it == 2) {
-            println(it)
-            continue
-        }
-        if (it != 1) {
-            var so=true
-            for (i in (2..it - 1)) {
-                if (it % i == 0) {
-                    so=false
-                    break
-                }
-            }
-           if(so) println(it)
-        }
+    //2 4 8  ->차이의 최대공약수
+    val (n, s) = readLine().split(" ").map { it.toLong() } //수 , 내좌표
+    val list = readLine().split(" ").map { it.toLong() } //동생 좌표
+    val cha = mutableListOf<Long>() //차이 리스트
+    list.forEach {
+        cha.add(abs(it - s))
     }
+    ans = cha.first()
+    for (i in cha.indices) {
+        if (i == cha.size - 1) break
+        ans = gcd(ans, cha[i + 1])
+    }
+
+    println(ans)
 }
+
+fun gcd(a: Long, b: Long):Long = if (b != 0L) gcd(b, a % b) else a
