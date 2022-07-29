@@ -2,72 +2,56 @@ package com.ummaaack.coding_test.baekjoon_step
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.lang.StringBuilder
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
-val list = MutableList(10) { it } //0..9
-var bolList = BooleanArray(list.size) { false }
-var pickedNum = mutableListOf<Int>()
-var buList = mutableListOf<String>()
-var ans = mutableListOf<Long>()
+
+var graph = arrayOf<IntArray>()
+var bolList = arrayOf<BooleanArray>()
+var n = 0
+val xx = listOf(-2, -2, -1, -1, 2, 2, 1, 1)
+val yy = listOf(1, -1, 2, -2, -1, 1, -2, 2)
+var want = Pair(0, 0)
+var flag = true
 fun main() = with(BufferedReader(InputStreamReader(System.`in`))) {
-    //부등호 개수 k
-    //넣을 수 있는 수 리스트: 0부터 9
-    //순서열 ->k+1개의 사이즈 ->순열
-    //만족하는 순열 add하고 최대 최소따로 출력
-    val k = readLine().toInt() //9개의 부등호
-    val st = StringTokenizer(readLine())
-    for (i in 1..k) {
-        buList.add(st.nextToken())
-    }
-    sun(0, k + 1)
-    ans.sort()
-    println(ans.last())
-    if (ans.first().toString().length == k) println("0"+ans.first())
-    else println(ans.first())
-}
+    val count = readLine().toInt() //test case count
+    for (i in 1..count) {
+        flag = true
+        n = readLine().toInt() //  가로 세로 사이즈
+        val current = readLine().split(" ").map { it.toInt() } //  현재 있는 칸
+        val (a, b) = readLine().split(" ").map { it.toInt() }
 
-fun sun(cnt: Int, depth: Int) {
-    if (cnt == depth) {
-        if (check(pickedNum)) {
-            var sb = StringBuilder("")
-            pickedNum.forEach {
-                sb.append(it.toString())
-            }
-            ans.add(sb.toString().toLong())
+        if (current[0] == a && current[1] == b) {
+            println(0)
+            continue
         }
-        return
-    }
-
-    for (i in 0 until list.size) {
-        if (!bolList[i]) {
-            bolList[i] = true
-            pickedNum.add(list[i])
-            sun(cnt + 1, depth)
-            bolList[i] = false
-            pickedNum.removeLast()
-        }
+        bolList = Array(n) { BooleanArray(n) { false } }
+        graph = Array(n) { IntArray(n) { 0 } }
+        want = Pair(a, b)
+        bfs(Pair(current[0], current[1]))
     }
 }
 
-//5 6 8 9 0 2 3 4 5 1 ->10개
-fun check(list: MutableList<Int>): Boolean {
-    var flag = true
-    for (i in 0 until buList.size) { //0..9
-        if (buList[i] == "<") {
-            if (list[i] > list[i + 1]) {
+fun bfs(pair: Pair<Int, Int>) {
+    val queue: Queue<Pair<Int, Int>> = LinkedList()
+    queue.add(pair) //0 0
+    bolList[pair.first][pair.second] = true
+    while (queue.isNotEmpty()) {
+        val node = queue.poll() //0 0
+        for (i in xx.indices) {
+            val a = node.first + xx[i]
+            val b = node.second + yy[i]
+            if (a < 0 || a >= n || b < 0 || b >= n) continue
+            if (bolList[a][b]) continue
+
+            graph[a][b] = graph[node.first][node.second] + 1
+            if (flag && a == want.first && b == want.second) {
                 flag = false
+                println(graph[a][b])
                 break
-            }
-        } else {
-            if (list[i] < list[i + 1]) {
-                flag = false
-                break
+            } else {
+                bolList[a][b] = true
+                queue.add(Pair(a, b))
             }
         }
     }
-    return flag
 }
