@@ -5,53 +5,65 @@ import java.io.InputStreamReader
 import java.util.*
 
 
-var graph = arrayOf<IntArray>()
-var bolList = arrayOf<BooleanArray>()
-var n = 0
-val xx = listOf(-2, -2, -1, -1, 2, 2, 1, 1)
-val yy = listOf(1, -1, 2, -2, -1, 1, -2, 2)
-var want = Pair(0, 0)
-var flag = true
+val list = mutableListOf<Move>()
+val ans = mutableListOf<Int>()
+var kk = 0
 fun main() = with(BufferedReader(InputStreamReader(System.`in`))) {
-    val count = readLine().toInt() //test case count
-    for (i in 1..count) {
-        flag = true
-        n = readLine().toInt() //  가로 세로 사이즈
-        val current = readLine().split(" ").map { it.toInt() } //  현재 있는 칸
-        val (a, b) = readLine().split(" ").map { it.toInt() }
+    print(bfs().toString() + " ")
 
-        if (current[0] == a && current[1] == b) {
-            println(0)
-            continue
-        }
-        bolList = Array(n) { BooleanArray(n) { false } }
-        graph = Array(n) { IntArray(n) { 0 } }
-        want = Pair(a, b)
-        bfs(Pair(current[0], current[1]))
-    }
-}
-
-fun bfs(pair: Pair<Int, Int>) {
-    val queue: Queue<Pair<Int, Int>> = LinkedList()
-    queue.add(pair) //0 0
-    bolList[pair.first][pair.second] = true
-    while (queue.isNotEmpty()) {
-        val node = queue.poll() //0 0
-        for (i in xx.indices) {
-            val a = node.first + xx[i]
-            val b = node.second + yy[i]
-            if (a < 0 || a >= n || b < 0 || b >= n) continue
-            if (bolList[a][b]) continue
-
-            graph[a][b] = graph[node.first][node.second] + 1
-            if (flag && a == want.first && b == want.second) {
-                flag = false
-                println(graph[a][b])
-                break
-            } else {
-                bolList[a][b] = true
-                queue.add(Pair(a, b))
+    var target = kk
+    while (target != -1) {
+        for (it in list) {
+        //    println(list)
+            if (it.now == target) {
+                println(it.now)
+                ans.add(target)
+                target = it.before
             }
         }
     }
+
+    ans.reversed().forEach {
+        print("${it}")
+    }
 }
+
+private fun bfs(): Int {
+    val (n, k) = readLine()!!.split(" ").map { it.toInt() }
+    kk = k
+    val queue: Queue<Move> = LinkedList()
+    val visited = BooleanArray(100_001) { false }
+
+    queue.add(Move(n, 0, -1))
+    visited[n] = true
+    list.add(Move(n, 0, -1)) //Move(5,0,-1)
+    while (queue.isNotEmpty()) {
+        val current = queue.poll() //Move
+        if (current.now == k) return current.time
+
+        if (checkRange(current.now - 1) && !visited[current.now - 1]) {
+            queue.add(Move(current.now - 1, current.time + 1, current.now))
+            list.add(Move(current.now - 1, current.time + 1, current.now))
+            visited[current.now - 1] = true
+        }
+        if (checkRange(current.now + 1) && !visited[current.now + 1]) {
+            queue.add(Move(current.now + 1, current.time + 1, current.now))
+            list.add(Move(current.now - 1, current.time + 1, current.now))
+            visited[current.now + 1] = true
+        }
+        if (checkRange(current.now * 2) && !visited[current.now * 2]) {
+            queue.add(Move(current.now * 2, current.time + 1, current.now))
+            list.add(Move(current.now * 2, current.time + 1, current.now))
+            visited[current.now * 2] = true
+        }
+    }
+    return -1
+}
+
+fun checkRange(x: Int) = x in 0..100_000
+
+data class Move(
+    val now: Int,
+    val time: Int,
+    val before: Int
+)
