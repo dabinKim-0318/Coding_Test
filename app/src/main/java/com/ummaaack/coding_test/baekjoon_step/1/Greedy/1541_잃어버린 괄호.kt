@@ -5,94 +5,100 @@ import java.util.*
 import kotlin.math.*
 import kotlin.system.*
 
-/*private lateinit var matrix: Array<IntArray>
-private lateinit var visited: BooleanArray
-private var ans = 0
+var n = 0
+var m = 0
+var graph = arrayOf<IntArray>()
+var list = mutableListOf<Pair<Int, Int>>() //벽 후보
+var pickedNum = mutableListOf<Pair<Int, Int>>() //선택된 벽 3개
+var vList = mutableListOf<Pair<Int, Int>>() //선택된 벽 3개
+var ans = 0
+var hasB = false
+var count = 0
+var visited = arrayOf<BooleanArray>()
 fun main() = with(BufferedReader(InputStreamReader(System.`in`))) {
-    //depth가 m인 연결요소가 존재하는가
     val (nn, mm) = readLine().split(" ").map { it.toInt() }
-    matrix = Array(nn) { IntArray(nn) { 0 } }
-    visited = BooleanArray(nn) { false }
-    repeat(mm) {
-        val (x, y) = readLine().split(" ").map { it.toInt() }
-        matrix[x][y] = 1
-        matrix[y][x] = 1
-    }
-  for(it in matrix) {
-        if(it.slice(1..it.size-1).filter{i->i==1}.count()==it.size-1){
-            println(0)
-            exitProcess(0)
-        }
-    }
-    for (i in visited.indices) {
-        dfs(i)
-        if (ans - 1 == nn - 1) {
-            println(1)
-            exitProcess(0)
-        }
-        ans = 0
-        visited.fill(false)
-    }
-    println(0)
-}
+    n = nn
+    m = mm
+    graph = Array(n) { IntArray(m) { 0 } }
+    visited = Array(n) { BooleanArray(m) { false } }
 
-private fun dfs(n: Int) {
-    ans += 1
-    visited[n] = true
-    for (i in 0 until matrix.size) {
-        if (matrix[n][i] == 1 && !visited[i]) {
-            dfs(i)
-        }
-    }
-}*/
-
-
-val queue: Queue<Char> = LinkedList<Char>()
-var target = ""
-var list = ""
-fun main() = with(BufferedReader(InputStreamReader(System.`in`))) {
-    val str = readLine()
-    target = readLine()
-
-    for (i in 0 until str.length) {
-        if (target.contains(str[i])
-        ) {
-            list += str[i]
-            println(list)
-            println(i)
-        } else {
-            println(i)
-            check()
-            queue.add(str[i])
-            println(queue)
-        }
-    }
-    var sb = StringBuilder()
-    queue.forEach {
-        sb.append(it)
-    }
-    println(sb)
-}
-
-private fun check() {
-    while (true) {
-        if (list.isEmpty()) break
-        if (list.length >= target.length) { //ca4ca4
-            for (i in 0 until list.length) {
-                if (i + target.length - 1 >= list.length - 1) break
-                if (list.substring(i..i + target.length - 1) == target) {
-
-                    list = (list.removeRange(i..i + target.length - 1))
-                    break
-                }
+    for (i in 0 until n) {
+        val input = readLine().split(" ").map { it.toInt() }
+        for (j in 0 until m) {
+            graph[i][j] = input[j]
+            if (input[j] == 0) {
+                list.add(Pair(i, j))
+            } //0이니까 빈칸 후보
+            if (input[j] == 1) {
+                visited[i][j] = true
+                vList.add(Pair(i, j))
             }
         }
     }
-    if (list.isNotEmpty()) {
-        println(list)
-        list.forEach {
-            queue.add(it)
-            println(queue)
+
+    combi(0, 3, 0)
+    println(ans)
+    //빈칸 3개를 조합으로 구함
+    //dfs로 돌려서 바이러스 전파
+    //전파 후 0의 개수 => ans
+
+}
+
+fun combi(cnt: Int, depth: Int, beginWith: Int) {
+    if (cnt == depth) {
+        for (i in 0..2) {
+            graph[pickedNum[i].first][pickedNum[i].second] = 1 //벽을 세움
+            visited[pickedNum[i].first][pickedNum[i].second] = true
         }
+        for (i in 0 until n) {
+            for (j in 0 until m) {
+                dfs(i, j)
+                hasB = false
+                count = 0
+            }
+        }
+        var vCount=0
+        visited.forEach { vCount+=it.count{it==false} }
+        ans = max(ans, vCount)
+        println(pickedNum)
+        println(vCount)
+        visited = Array(n) { BooleanArray(m) { false } }
+        for (i in vList) {
+            visited[i.first][i.second] = false
+        }
+        for (i in 0..2) {
+            graph[pickedNum[i].first][pickedNum[i].second] = 0 //벽을 초기화함
+            visited[pickedNum[i].first][pickedNum[i].second] = false
+        }
+
+        return
     }
+
+    for (i in beginWith until list.size) {
+        pickedNum.add(list[i])
+        combi(cnt + 1, depth, i + 1)
+        pickedNum.removeLast()
+    }
+}
+
+
+fun dfs(x: Int, y: Int): Int {
+    if (x < 0 || y < 0 || x >= n || y >= m) return 0
+
+    if (graph[x][y] != 1 && !visited[x][y]) {
+        when (graph[x][y]) {
+            0 -> count += 1
+            2 -> hasB = true
+        }
+        visited[x][y] = true
+
+        dfs(x + 1, y)
+        dfs(x - 1, y)
+        dfs(x, y - 1)
+        dfs(x, y + 1)
+
+        return if (hasB) return count else 0
+    }
+
+    return 0
 }
